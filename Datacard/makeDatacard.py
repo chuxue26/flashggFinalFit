@@ -13,6 +13,7 @@ from systematics import theory_systematics, experimental_systematics, signal_sha
 
 def get_options():
   parser = OptionParser()
+  parser.add_option('--inputYields', dest='inputYields', default='.', help='Input directory containing per category dataframes')
   parser.add_option('--ext', dest='ext', default='', help="Extension (used when running RunYields.py)")
   parser.add_option('--years', dest='years', default='2022preEE,2022postEE', help="Comma separated list of years in makeYields output")
   # For pruning processes
@@ -45,7 +46,8 @@ if opt.doSTXSScaleCorrelationScheme: from tools.STXS_tools import STXSScaleCorre
 # Concatenate dataframes
 print(" --> Loading per category dataframes into single dataframe")
 extStr = "_%s"%opt.ext if opt.ext != '' else ''
-pkl_files = glob.glob("./yields%s/*.pkl"%extStr)
+try: pkl_files = glob.glob("./yields%s/*.pkl"%extStr)
+except: pkl_files = glob.glob("%s/yields%s/*/*.pkl"%(opt.input,extStr))
 pkl_files.sort() # Categories in alphabetical order
 data = pd.DataFrame()
 for f_pkl_name in pkl_files:

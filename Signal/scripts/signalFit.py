@@ -60,6 +60,8 @@ def get_options():
   # Minimizer options
   parser.add_option('--minimizerMethod', dest='minimizerMethod', default='TNC', help="(Scipy) Minimizer method")
   parser.add_option('--minimizerTolerance', dest='minimizerTolerance', default=1e-8, type='float', help="(Scipy) Minimizer toleranve")
+  # For Inference Integration
+  parser.add_option('--inputConfigsDir', dest='inputConfigsDir', default=swd__, help='outputs from previous steps')
   return parser.parse_args()
 (opt,args) = get_options()
 
@@ -123,10 +125,10 @@ else:
 
 # Options for using diagonal process from getDiagProc output json
 if opt.useDiagonalProcForShape:
-  if not os.path.exists("%s/outdir_%s/getDiagProc/json/diagonal_process.json"%(swd__,opt.ext)):
+  if not os.path.exists("%s/outdir_%s/getDiagProc/json/diagonal_process.json"%(opt.inputConfigsDir,opt.ext)):
     print(" --> [ERROR] Diagonal process json from getDiagProc does not exist. Using nominal proc x cat for shape")
   else:
-    with open("%s/outdir_%s/getDiagProc/json/diagonal_process.json"%(swd__,opt.ext),"r") as jf: dproc = json.load(jf)
+    with open("%s/outdir_%s/getDiagProc/json/diagonal_process.json"%(opt.inputConfigsDir,opt.ext),"r") as jf: dproc = json.load(jf)
     procRVFit = dproc[opt.cat]
     print(" --> Using diagonal proc (%s,%s) for shape"%(procRVFit,opt.cat))
     if not opt.skipVertexScenarioSplit: procWVFit = dproc[opt.cat]
@@ -134,10 +136,13 @@ if opt.useDiagonalProcForShape:
 # Process for syst
 procSyst = opt.proc
 if opt.useDiagonalProcForSyst:
-  if not os.path.exists("%s/outdir_%s/getDiagProc/json/diagonal_process.json"%(swd__,opt.ext)):
+  if not os.path.exists("%s/outdir_%s/getDiagProc/json/diagonal_process.json"%(opt.inputConfigsDir,opt.ext)) or os.path.exists("%s/diagonal_process.json"%(opt.inputConfigsDir)):
     print(" --> [ERROR] Diagonal process json from getDiagProc does not exist. Using nominal proc x cat for systematics")
   else:
-    with open("%s/outdir_%s/getDiagProc/json/diagonal_process.json"%(swd__,opt.ext),"r") as jf: dproc = json.load(jf)
+    try:
+      with open("%s/outdir_%s/getDiagProc/json/diagonal_process.json"%(opt.inputConfigsDir,opt.ext),"r") as jf: dproc = json.load(jf)
+    except FileNotFoundError:
+      with open("%s/diagonal_process.json"%(opt.inputConfigsDir)) as jf: dproc = json.load(jf)
     procSyst = dproc[opt.cat]
     print(" --> Using diagonal proc (%s,%s) for systematics"%(procSyst,opt.cat))
 
@@ -261,11 +266,17 @@ if not opt.skipBeamspotReweigh:
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # If using nGaussian fit then extract nGaussians from fTest json file
 if not opt.useDCB:
-  with open("%s/outdir_%s/fTest/json/nGauss_%s.json"%(swd__,opt.ext,catRVFit)) as jf: ngauss = json.load(jf)
+  try:
+    with open("%s/outdir_%s/fTest/json/nGauss_%s.json"%(opt.inputConfigsDir,opt.ext,catRVFit)) as jf: ngauss = json.load(jf)
+  except FileNotFoundError:
+    with open("%s/nGauss_%s.json"%(opt.inputConfigsDir,catRVFit)) as jf: ngauss = json.load(jf)
   nRV = int(ngauss["%s__%s"%(procRVFit,catRVFit)]['nRV'])
   if opt.skipVertexScenarioSplit: print(" --> Fitting function: convolution of nGaussians (%g)"%nRV)
   else: 
-    with open("%s/outdir_%s/fTest/json/nGauss_%s.json"%(swd__,opt.ext,catWVFit)) as jf: ngauss = json.load(jf)
+    try:
+      with open("%s/outdir_%s/fTest/json/nGauss_%s.json"%(opt.inputConfigsDir,opt.ext,catWVFit)) as jf: ngauss = json.load(jf)
+    except FileNotFoundError:
+      with open("%s/nGauss_%s.json"%(opt.inputConfigsDir,catWVFit)) as jf: ngauss = json.load(jf)
     nWV = int(ngauss["%s__%s"%(procWVFit,catWVFit)]['nWV'])
     print(" --> Fitting function: convolution of nGaussians (RV=%g,WV=%g)"%(nRV,nWV))
 else:
