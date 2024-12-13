@@ -151,3 +151,8 @@ globalXSBRMap['STXS']['THQ_FWDH'] = {'mode':'tHq','factor':0.0279}
 globalXSBRMap['STXS']['THQ'] = {'mode':'tHq','factor':0.9721}
 globalXSBRMap['STXS']['THW_FWDH'] = {'mode':'tHW','factor':0.0106}
 globalXSBRMap['STXS']['THW'] = {'mode':'tHW','factor':0.9894}
+
+# For HHbbgg
+globalXSBRMap['bbgg_test'] = od()
+globalXSBRMap['bbgg_test']['GG2H'] = {'mode':'ggH'}
+globalXSBRMap['bbgg_test']['decay'] = {'mode':'hgg', 'factor': 1}
