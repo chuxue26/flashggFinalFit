@@ -240,3 +240,13 @@ globalReplacementMap["STXS"]["catRVMap"]["RECO_WH_LEP_PTV_75_150_Tag1"] = "RECO_
 globalReplacementMap["STXS"]["catRVMap"]["RECO_WH_LEP_PTV_GT150_Tag0"] = "RECO_WH_LEP_PTV_GT150_Tag0"
 globalReplacementMap["STXS"]["catRVMap"]["RECO_ZH_LEP_Tag0"] = "RECO_ZH_LEP_Tag0"
 globalReplacementMap["STXS"]["catRVMap"]["RECO_ZH_LEP_Tag1"] = "RECO_ZH_LEP_Tag1"
+
+
+# For HHbbgg Test
+globalReplacementMap['bbgg_test'] = od()
+globalReplacementMap['bbgg_test']['procWV'] = "GG2H"
+globalReplacementMap['bbgg_test']['catWV'] = "NOTAG"
+globalReplacementMap['bbgg_test']['procRVMap'] = od()
+globalReplacementMap["bbgg_test"]["procRVMap"]["NOTAG"] = "GG2H"
+globalReplacementMap["bbgg_test"]["catRVMap"] = od()
+globalReplacementMap["bbgg_test"]["catRVMap"]["NOTAG"] = "NOTAG"
